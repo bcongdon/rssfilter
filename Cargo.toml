@@ -1,0 +1,10 @@
+[package]
+name = "rssfilter"
+version = "0.1.0"
+authors = ["Benjamin Congdon <bencongdon96@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rss = { version = "*", features = ["from_url"] }
+rocket = "0.4.0"
+regex = "1"
