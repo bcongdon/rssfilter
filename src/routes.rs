@@ -1,8 +1,11 @@
+use std::io::Cursor;
+
 use regex::Regex;
 use rocket::http::hyper::header::{CacheControl, CacheDirective};
-use rocket::http::RawStr;
-use rocket::request::Form;
-use rocket::request::FromFormValue;
+use rocket::http::{ContentType, RawStr};
+use rocket::request::{Form, FromFormValue, Request};
+use rocket::response::status;
+use rocket::response::{self, Responder, Response};
 
 #[derive(Debug)]
 struct FilterRegex(Regex);
@@ -33,8 +36,7 @@ impl FeedQuery {
                 accepted &= !reject_re.0.is_match(title);
             }
 
-            if let Some(allow_re) = &self.title_allow
-            {
+            if let Some(allow_re) = &self.title_allow {
                 accepted &= allow_re.0.is_match(title);
             }
         }
@@ -55,20 +57,33 @@ pub fn index() -> &'static str {
     "Application successfully started!"
 }
 
-#[get("/feed?<feed..>")]
-pub fn get_feed(feed: Form<FeedQuery>) -> FeedQueryResponder {
-    println!("{:?}", feed);
-    let mut channel = rss::Channel::from_url(&feed.url).unwrap();
-    let items: Vec<rss::Item> = channel
-        .items()
-        .iter()
-        .filter(|&item| feed.filter(item))
-        .cloned()
-        .collect();
-    channel.set_items(items);
-    FeedQueryResponder {
-        inner: channel.to_string(),
-        cache_control: CacheControl(vec![CacheDirective::MaxAge(3600)]),
+pub struct ChannelResponse(rss::Channel);
+
+impl<'r> Responder<'r> for ChannelResponse {
+    fn respond_to(self, _: &Request) -> response::Result<'r> {
+        Response::build()
+            .sized_body(Cursor::new(self.0.to_string()))
+            .header(ContentType::XML)
+            .header(CacheControl(vec![CacheDirective::MaxAge(3600)]))
+            .ok()
     }
-    // channel.to_string()
+}
+
+#[get("/feed?<feed..>")]
+pub fn get_feed(feed: Form<FeedQuery>) -> Result<ChannelResponse, status::BadRequest<String>> {
+    let raw_url_str: &RawStr = feed.url.as_str().into();
+
+    match rss::Channel::from_url(&raw_url_str.url_decode_lossy()) {
+        Ok(mut channel) => {
+            let items: Vec<rss::Item> = channel
+                .items()
+                .iter()
+                .filter(|&item| feed.filter(item))
+                .cloned()
+                .collect();
+            channel.set_items(items);
+            Ok(ChannelResponse(channel))
+        }
+        Err(err) => Err(status::BadRequest(Some(err.to_string()))),
+    }
 }
