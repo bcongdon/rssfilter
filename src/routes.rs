@@ -14,7 +14,7 @@ impl<'v> FromFormValue<'v> for FilterRegex {
     type Error = &'v RawStr;
 
     fn from_form_value(form_value: &'v RawStr) -> Result<FilterRegex, &'v RawStr> {
-        match Regex::new(form_value.as_str()) {
+        match Regex::new(form_value.url_decode_lossy().as_str()) {
             Ok(regex) => Ok(FilterRegex(regex)),
             _ => Err(form_value),
         }
