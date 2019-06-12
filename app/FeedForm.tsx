@@ -77,11 +77,17 @@ export class FeedForm extends React.Component<FeedFormProps, State> {
         <Form.Group widths="equal">
           <Form.Field>
             <label>Title Accept</label>
-            <input placeholder="Title Accept" onChange={this.handleTitleAcceptChange} />
+            <input
+              placeholder="A regex for titles to accept"
+              onChange={this.handleTitleAcceptChange}
+            />
           </Form.Field>
           <Form.Field>
             <label>Title Reject</label>
-            <input placeholder="Title Reject" onChange={this.handleTitleRejectChange} />
+            <input
+              placeholder="A regex for titles to reject"
+              onChange={this.handleTitleRejectChange}
+            />
           </Form.Field>
         </Form.Group>
         <Divider />
