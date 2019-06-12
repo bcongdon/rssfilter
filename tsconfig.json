@@ -1,13 +1,13 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist/",
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es6",
-        "jsx": "react"
-    },
-    "include": [
-        "./app/**/*"
-    ]
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "esNext",
+    "target": "es6",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "include": ["./app/**/*"]
 }

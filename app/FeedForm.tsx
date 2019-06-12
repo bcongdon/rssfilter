@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Formik, FormikActions, FormikProps, Field, FieldProps } from 'formik';
 import { Divider, Button, Input, Form, Popup } from 'semantic-ui-react';
 import * as QueryString from 'query-string';
+import Regex from './regex_rs';
 
 export interface FeedFormValues {
   feedURL: string;
@@ -34,12 +35,16 @@ export class FeedForm extends React.Component<FeedFormProps, State> {
     this.setState({ feedURL: (event.target as HTMLSelectElement).value });
   };
 
-  handleTitleAcceptChange = (event: React.FormEvent) => {
-    this.setState({ titleReject: (event.target as HTMLSelectElement).value });
+  handleTitleAcceptChange = async (event: React.FormEvent) => {
+    let titleAccept = (event.target as HTMLSelectElement).value;
+    this.setState({ titleAccept });
   };
 
-  handleTitleRejectChange = (event: React.FormEvent) => {
-    this.setState({ titleAccept: (event.target as HTMLSelectElement).value });
+  handleTitleRejectChange = async (event: React.FormEvent) => {
+    let titleReject = (event.target as HTMLSelectElement).value;
+    this.setState({ titleReject });
+    let regex = await Regex(titleReject);
+    console.log(regex.is_match('ben'));
   };
 
   getFilterFeedURL(): string {
