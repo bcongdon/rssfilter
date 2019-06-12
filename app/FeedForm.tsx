@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Formik, FormikActions, FormikProps, Field, FieldProps } from 'formik';
-import { Divider, Button, Input, Form } from 'semantic-ui-react';
+import { Divider, Button, Input, Form, Popup } from 'semantic-ui-react';
 import * as QueryString from 'query-string';
 
 export interface FeedFormValues {
@@ -14,13 +14,20 @@ interface FeedFormProps {
   filterFeedURL?: string;
 }
 
+interface State extends FeedFormValues {
+  showCopyPopup: boolean;
+}
+
 const baseURL: string = 'https://rssfilter-a7aj2utffa-uc.a.run.app';
 
-export class FeedForm extends React.Component<FeedFormProps, FeedFormValues> {
-  state: Readonly<FeedFormValues> = {
+export class FeedForm extends React.Component<FeedFormProps, State> {
+  private feedURLInputRef: React.RefObject<Input> = React.createRef();
+
+  state: Readonly<State> = {
     feedURL: '',
     titleAccept: '',
     titleReject: '',
+    showCopyPopup: false,
   };
 
   handleFeedURLChange = (event: React.FormEvent) => {
@@ -51,6 +58,15 @@ export class FeedForm extends React.Component<FeedFormProps, FeedFormValues> {
     return `${baseURL}/feed?${queryString}`;
   }
 
+  onCopy = () => {
+    this.feedURLInputRef.current.select();
+    document.execCommand('copy');
+    this.setState({ showCopyPopup: true });
+    setTimeout(() => {
+      this.setState({ showCopyPopup: false });
+    }, 1000);
+  };
+
   render() {
     return (
       <Form>
@@ -70,9 +86,27 @@ export class FeedForm extends React.Component<FeedFormProps, FeedFormValues> {
         </Form.Group>
         <Divider />
         <Input
-          action={{ color: 'teal', labelPosition: 'right', icon: 'copy', content: 'Copy' }}
+          ref={this.feedURLInputRef}
+          disabled={this.getFilterFeedURL() === ''}
+          action={
+            <Popup
+              inverted
+              open={this.state.showCopyPopup}
+              trigger={
+                <Button
+                  disabled={this.getFilterFeedURL() === ''}
+                  color="teal"
+                  labelPosition="right"
+                  icon="copy"
+                  content="Copy"
+                  onClick={this.onCopy}
+                />
+              }
+              content="Copied!"
+            />
+          }
           value={this.getFilterFeedURL()}
-        ></Input>
+        />
       </Form>
     );
   }
