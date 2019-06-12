@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { Formik, FormikActions, FormikProps, Field, FieldProps } from 'formik';
 import { Divider, Button, Input, Form, Popup } from 'semantic-ui-react';
 import * as QueryString from 'query-string';
-import Regex from './regex_rs';
 
 export interface FeedFormValues {
   feedURL: string;
@@ -10,25 +8,18 @@ export interface FeedFormValues {
   titleAccept: string;
 }
 
-interface FeedFormProps {
+interface Props {
   onChange: (formValues: FeedFormValues) => void;
   filterFeedURL?: string;
 }
 
-interface State extends FeedFormValues {
-  showCopyPopup: boolean;
-}
-
 const baseURL: string = 'https://rssfilter-a7aj2utffa-uc.a.run.app';
 
-export class FeedForm extends React.Component<FeedFormProps, State> {
-  private feedURLInputRef: React.RefObject<Input> = React.createRef();
-
-  state: Readonly<State> = {
+export class FeedForm extends React.Component<Props, FeedFormValues> {
+  state: Readonly<FeedFormValues> = {
     feedURL: '',
     titleAccept: '',
     titleReject: '',
-    showCopyPopup: false,
   };
 
   handleFeedURLChange = (event: React.FormEvent) => {
@@ -43,8 +34,6 @@ export class FeedForm extends React.Component<FeedFormProps, State> {
   handleTitleRejectChange = async (event: React.FormEvent) => {
     let titleReject = (event.target as HTMLSelectElement).value;
     this.setState({ titleReject });
-    let regex = await Regex(titleReject);
-    console.log(regex.is_match('ben'));
   };
 
   getFilterFeedURL(): string {
@@ -62,15 +51,6 @@ export class FeedForm extends React.Component<FeedFormProps, State> {
     const queryString = QueryString.stringify(query);
     return `${baseURL}/feed?${queryString}`;
   }
-
-  onCopy = () => {
-    this.feedURLInputRef.current.select();
-    document.execCommand('copy');
-    this.setState({ showCopyPopup: true });
-    setTimeout(() => {
-      this.setState({ showCopyPopup: false });
-    }, 1000);
-  };
 
   render() {
     return (
@@ -96,28 +76,7 @@ export class FeedForm extends React.Component<FeedFormProps, State> {
           </Form.Field>
         </Form.Group>
         <Divider />
-        <Input
-          ref={this.feedURLInputRef}
-          disabled={this.getFilterFeedURL() === ''}
-          action={
-            <Popup
-              inverted
-              open={this.state.showCopyPopup}
-              trigger={
-                <Button
-                  disabled={this.getFilterFeedURL() === ''}
-                  color="teal"
-                  labelPosition="right"
-                  icon="copy"
-                  content="Copy"
-                  onClick={this.onCopy}
-                />
-              }
-              content="Copied!"
-            />
-          }
-          value={this.getFilterFeedURL()}
-        />
+        <Button color="green">Get Feed</Button>
       </Form>
     );
   }

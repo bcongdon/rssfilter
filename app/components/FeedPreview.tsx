@@ -25,7 +25,6 @@ export default class FeedPreview extends React.Component<Props, State> {
     let parser = new Parser();
     let feed = await parser.parseURL(feedUrl);
     let feedItems: Array<FeedItem> = feed.items.map(item => {
-      console.log(item);
       return {
         title: item.title,
         url: item.link,

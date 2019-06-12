@@ -1,5 +1,9 @@
 import * as React from 'react';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { Feed, Icon, Popup } from 'semantic-ui-react';
+
+dayjs.extend(relativeTime);
 
 export interface FeedItem {
   title: string;
@@ -21,9 +25,17 @@ const FeedPreviewItem: React.FunctionComponent<FeedItem> = props => (
     <Feed.Label>{props.included ? <IncludedIcon /> : <ExcludedIcon />}</Feed.Label>
     <Feed.Content>
       <Feed.Summary>
-        <a href={props.url}>{props.title}</a>
+        <a href={props.url} target="_blank">
+          {props.title}
+        </a>
       </Feed.Summary>
-      <Feed.Meta>{props.date ? <Feed.Date>{props.date}</Feed.Date> : null}</Feed.Meta>
+      <Feed.Meta>
+        {props.date ? (
+          <Feed.Date>
+            <span title={props.date}>{dayjs(props.date).fromNow()}</span>
+          </Feed.Date>
+        ) : null}
+      </Feed.Meta>
     </Feed.Content>
   </Feed.Event>
 );
