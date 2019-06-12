@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Container, Header, Icon, Segment } from 'semantic-ui-react';
 import { FeedForm, FeedFormValues } from './FeedForm';
 import Footer from './components/Footer';
+import FeedPreview from './components/FeedPreview';
 
 interface AppState {
   feedFormValues?: FeedFormValues;
@@ -35,6 +36,7 @@ export default class App extends React.Component<{}, AppState> {
         <Segment>
           <FeedForm onChange={this.onFormChange} filterFeedURL={this.getFeedURL()} />
         </Segment>
+        <FeedPreview feedUrl="https://cors-anywhere.herokuapp.com/https://benjamincongdon.me/feed.xml" />
         <div style={{ marginTop: 100 }}></div>
         <Footer />
       </Container>

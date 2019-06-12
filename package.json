@@ -50,11 +50,13 @@
   "dependencies": {
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
+    "@types/xml2js": "^0.4.4",
     "formik": "^1.5.7",
     "query-string": "^6.7.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "regex-rs": "^0.1.0",
+    "rss-parser": "^3.7.1",
     "semantic-ui-react": "^0.87.1"
   }
 }
