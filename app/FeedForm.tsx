@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Divider, Button, Input, Form, Popup } from 'semantic-ui-react';
+import { Formik, Field as FormikField, FormikActions, FormikProps, FieldProps } from 'formik';
+import { Divider, Button, Form, Message } from 'semantic-ui-react';
+import validUrl from 'valid-url';
 
 export interface FeedFormValues {
   feedUrl: string;
@@ -18,53 +20,71 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
     titleReject: '',
   };
 
-  handleFeedURLChange = (event: React.FormEvent) => {
-    let feedUrl = (event.target as HTMLSelectElement).value;
-    this.setState({ feedUrl });
-  };
-
-  handleTitleAcceptChange = async (event: React.FormEvent) => {
-    let titleAccept = (event.target as HTMLSelectElement).value;
-    this.setState({ titleAccept });
-  };
-
-  handleTitleRejectChange = async (event: React.FormEvent) => {
-    let titleReject = (event.target as HTMLSelectElement).value;
-    this.setState({ titleReject });
-  };
-
-  onSubmit = () => {
-    this.props.onSubmit(this.state);
-  };
-
   render() {
     return (
-      <Form>
-        <Form.Field required>
-          <label>RSS Feed URL</label>
-          <input placeholder="RSS Feed URL" onChange={this.handleFeedURLChange} />
-        </Form.Field>
-        <Form.Group widths="equal">
-          <Form.Field>
-            <label>Title Accept</label>
-            <input
-              placeholder="A regex for titles to accept"
-              onChange={this.handleTitleAcceptChange}
+      <Formik
+        initialValues={{ feedUrl: '', titleAccept: '', titleReject: '' }}
+        onSubmit={(values: FeedFormValues, actions: FormikActions<FeedFormValues>) => {
+          this.props.onSubmit(values);
+          actions.setSubmitting(false);
+        }}
+        validate={(values: FeedFormValues) => {
+          if (!validUrl.isWebUri(values.feedUrl)) {
+            return { feedUrl: 'Invalid Url' };
+          }
+        }}
+        render={(formikBag: FormikProps<FeedFormValues>) => (
+          <Form error={Boolean(formikBag.errors.feedUrl)}>
+            <FormikField
+              name="feedUrl"
+              render={({ field, form }: FieldProps<FeedFormValues>) => {
+                const hasError = form.touched.feedUrl && Boolean(form.errors.feedUrl);
+                return (
+                  <>
+                    <p>{formikBag.error}</p>
+                    <Form.Field required error={hasError}>
+                      <label>RSS Feed URL</label>
+                      <input type="text" {...field} placeholder="RSS Feed URL" />
+                    </Form.Field>
+                    {hasError && <Message error content={formikBag.errors.feedUrl} />}
+                  </>
+                );
+              }}
             />
-          </Form.Field>
-          <Form.Field>
-            <label>Title Reject</label>
-            <input
-              placeholder="A regex for titles to reject"
-              onChange={this.handleTitleRejectChange}
-            />
-          </Form.Field>
-        </Form.Group>
-        <Divider />
-        <Button color="green" onClick={this.onSubmit}>
-          Get Feed
-        </Button>
-      </Form>
+
+            <Form.Group widths="equal">
+              <FormikField
+                name="titleAccept"
+                render={({ field, form }: FieldProps<FeedFormValues>) => {
+                  const hasError = form.touched.titleAccept && Boolean(form.errors.titleAccept);
+                  return (
+                    <Form.Field error={hasError}>
+                      <label>Title Accept</label>
+                      <input type="text" {...field} placeholder="A regex for titles to accept" />
+                      {hasError ? <Message error content={form.errors.titleAccept} /> : null}
+                    </Form.Field>
+                  );
+                }}
+              />
+
+              <FormikField
+                name="titleReject"
+                render={({ field, form }: FieldProps<FeedFormValues>) => (
+                  <Form.Field>
+                    <label>Title Reject</label>
+                    <input type="text" {...field} placeholder="A regex for titles to reject" />
+                    {form.touched.titleReject && form.errors.titleReject && form.errors.titleReject}
+                  </Form.Field>
+                )}
+              />
+            </Form.Group>
+            <Divider />
+            <Button color="green" onClick={formikBag.submitForm}>
+              Get Feed
+            </Button>
+          </Form>
+        )}
+      />
     );
   }
 }
