@@ -8,6 +8,7 @@ use std::io::Read;
 #[fail(display = "Error loading feed: {}.", _0)]
 struct FeedError(String);
 
+#[derive(Serialize, Clone)]
 pub struct FeedItem {
     pub title: String,
 }
@@ -82,6 +83,25 @@ impl Feed {
                     .collect();
                 atom_feed.set_entries(new_entries);
             }
+        }
+    }
+
+    pub fn items(&self) -> Vec<FeedItem> {
+        match self {
+            Feed::RSS(rss_feed) => rss_feed
+                .items()
+                .iter()
+                .map(|item| FeedItem {
+                    title: item.title().unwrap().to_string(),
+                })
+                .collect(),
+            Feed::Atom(atom_feed) => atom_feed
+                .entries()
+                .iter()
+                .map(|entry| FeedItem {
+                    title: entry.title().to_string(),
+                })
+                .collect(),
         }
     }
 }

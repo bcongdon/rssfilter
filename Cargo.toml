@@ -11,3 +11,10 @@ regex = "1"
 reqwest = "0.9.18"
 atom_syndication = "0.6.0"
 failure = "0.1.5"
+serde = "1.0.92"
+
+
+[dependencies.rocket_contrib]
+version = "0.4.1"
+default-features = false
+features = ["json"]

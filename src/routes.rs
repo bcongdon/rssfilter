@@ -7,6 +7,7 @@ use rocket::http::{ContentType, RawStr};
 use rocket::request::{Form, FromFormValue, Request};
 use rocket::response::status;
 use rocket::response::{self, Responder, Response};
+use rocket_contrib::json::Json;
 
 #[derive(Debug)]
 struct FilterRegex(Regex);
@@ -75,6 +76,39 @@ pub fn get_feed(feed_query: Form<FeedQuery>) -> Result<Feed, status::BadRequest<
             feed.filter(|item| feed_query.filter(item));
             Ok(feed)
         }
+        Err(err) => Err(status::BadRequest(Some(err.to_string()))),
+    }
+}
+
+#[derive(Serialize)]
+pub struct FeedPreviewItem {
+    item: FeedItem,
+    included: bool,
+}
+
+#[derive(Serialize)]
+pub struct FeedPreview {
+    items: Vec<FeedPreviewItem>,
+}
+
+#[get("/preview_feed?<feed_query..>")]
+pub fn preview_feed(
+    feed_query: Form<FeedQuery>,
+) -> Result<Json<FeedPreview>, status::BadRequest<String>> {
+    let raw_url_str: &RawStr = feed_query.url.as_str().into();
+
+    match Feed::from_url(&raw_url_str.url_decode_lossy()) {
+        Ok(feed) => Ok(Json(FeedPreview {
+            items: feed
+                .items()
+                .iter()
+                .cloned()
+                .map(|item| FeedPreviewItem {
+                    item: item.clone(),
+                    included: feed_query.filter(item),
+                })
+                .collect(),
+        })),
         Err(err) => Err(status::BadRequest(Some(err.to_string()))),
     }
 }
