@@ -1,12 +1,12 @@
 use std::io::Cursor;
 
+use crate::feed::{Feed, FeedItem};
 use regex::Regex;
 use rocket::http::hyper::header::{CacheControl, CacheDirective};
 use rocket::http::{ContentType, RawStr};
 use rocket::request::{Form, FromFormValue, Request};
 use rocket::response::status;
 use rocket::response::{self, Responder, Response};
-use crate::feed::{Feed, FeedItem};
 
 #[derive(Debug)]
 struct FilterRegex(Regex);
@@ -56,8 +56,6 @@ pub fn index() -> &'static str {
     "Application successfully started!"
 }
 
-// pub struct ChannelResponse(Feed);
-
 impl<'r> Responder<'r> for Feed {
     fn respond_to(self, _: &Request) -> response::Result<'r> {
         Response::build()
@@ -79,18 +77,4 @@ pub fn get_feed(feed_query: Form<FeedQuery>) -> Result<Feed, status::BadRequest<
         }
         Err(err) => Err(status::BadRequest(Some(err.to_string()))),
     }
-
-    // match utils::load_feed(&raw_url_str.url_decode_lossy()) {
-    //     Ok(mut channel) => {
-    //         let items: Vec<rss::Item> = channel
-    //             .items()
-    //             .iter()
-    //             .filter(|&item| feed.filter(item))
-    //             .cloned()
-    //             .collect();
-    //         channel.set_items(items);
-    //         Ok(ChannelResponse(channel))
-    //     }
-    //     Err(err) => Err(status::BadRequest(Some(err.to_string()))),
-    // }
 }

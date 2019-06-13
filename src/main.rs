@@ -2,11 +2,11 @@
 
 #[macro_use]
 extern crate rocket;
-extern crate regex;
-extern crate rss;
-extern crate reqwest;
 extern crate atom_syndication;
 extern crate failure;
+extern crate regex;
+extern crate reqwest;
+extern crate rss;
 
 mod feed;
 pub mod routes;
