@@ -6,6 +6,7 @@ use rocket::http::{ContentType, RawStr};
 use rocket::request::{Form, FromFormValue, Request};
 use rocket::response::status;
 use rocket::response::{self, Responder, Response};
+use crate::feed::{Feed, FeedItem};
 
 #[derive(Debug)]
 struct FilterRegex(Regex);
@@ -29,16 +30,14 @@ pub struct FeedQuery {
 }
 
 impl FeedQuery {
-    fn filter(&self, item: &rss::Item) -> bool {
+    fn filter(&self, item: FeedItem) -> bool {
         let mut accepted = true;
-        if let Some(title) = item.title() {
-            if let Some(reject_re) = &self.title_reject {
-                accepted &= !reject_re.0.is_match(title);
-            }
+        if let Some(reject_re) = &self.title_reject {
+            accepted &= !reject_re.0.is_match(&item.title);
+        }
 
-            if let Some(allow_re) = &self.title_allow {
-                accepted &= allow_re.0.is_match(title);
-            }
+        if let Some(allow_re) = &self.title_allow {
+            accepted &= allow_re.0.is_match(&item.title);
         }
 
         accepted
@@ -57,33 +56,41 @@ pub fn index() -> &'static str {
     "Application successfully started!"
 }
 
-pub struct ChannelResponse(rss::Channel);
+// pub struct ChannelResponse(Feed);
 
-impl<'r> Responder<'r> for ChannelResponse {
+impl<'r> Responder<'r> for Feed {
     fn respond_to(self, _: &Request) -> response::Result<'r> {
         Response::build()
-            .sized_body(Cursor::new(self.0.to_string()))
+            .sized_body(Cursor::new(self.to_string()))
             .header(ContentType::XML)
             .header(CacheControl(vec![CacheDirective::MaxAge(3600)]))
             .ok()
     }
 }
 
-#[get("/feed?<feed..>")]
-pub fn get_feed(feed: Form<FeedQuery>) -> Result<ChannelResponse, status::BadRequest<String>> {
-    let raw_url_str: &RawStr = feed.url.as_str().into();
+#[get("/feed?<feed_query..>")]
+pub fn get_feed(feed_query: Form<FeedQuery>) -> Result<Feed, status::BadRequest<String>> {
+    let raw_url_str: &RawStr = feed_query.url.as_str().into();
 
-    match rss::Channel::from_url(&raw_url_str.url_decode_lossy()) {
-        Ok(mut channel) => {
-            let items: Vec<rss::Item> = channel
-                .items()
-                .iter()
-                .filter(|&item| feed.filter(item))
-                .cloned()
-                .collect();
-            channel.set_items(items);
-            Ok(ChannelResponse(channel))
+    match Feed::from_url(&raw_url_str.url_decode_lossy()) {
+        Ok(mut feed) => {
+            feed.filter(|item| feed_query.filter(item));
+            Ok(feed)
         }
         Err(err) => Err(status::BadRequest(Some(err.to_string()))),
     }
+
+    // match utils::load_feed(&raw_url_str.url_decode_lossy()) {
+    //     Ok(mut channel) => {
+    //         let items: Vec<rss::Item> = channel
+    //             .items()
+    //             .iter()
+    //             .filter(|&item| feed.filter(item))
+    //             .cloned()
+    //             .collect();
+    //         channel.set_items(items);
+    //         Ok(ChannelResponse(channel))
+    //     }
+    //     Err(err) => Err(status::BadRequest(Some(err.to_string()))),
+    // }
 }

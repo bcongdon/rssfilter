@@ -8,3 +8,6 @@ edition = "2018"
 rss = { version = "*", features = ["from_url"] }
 rocket = "0.4.0"
 regex = "1"
+reqwest = "0.9.18"
+atom_syndication = "0.6.0"
+failure = "0.1.5"
