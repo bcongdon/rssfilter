@@ -1,6 +1,7 @@
 use failure::Fail;
 use reqwest::{header, Client};
 use rss::Channel;
+use std::convert::TryFrom;
 use std::error::Error;
 use std::io::Read;
 
@@ -11,6 +12,43 @@ struct FeedError(String);
 #[derive(Serialize, Clone)]
 pub struct FeedItem {
     pub title: String,
+    pub date: String,
+    pub author: String,
+}
+
+type AtomItem = atom_syndication::Entry;
+impl From<AtomItem> for FeedItem {
+    fn from(atom_item: AtomItem) -> Self {
+        FeedItem {
+            title: atom_item.title().to_string(),
+            date: atom_item.updated().to_string(),
+            author: atom_item
+                .authors()
+                .iter()
+                .map(|person| person.name().to_string())
+                .collect::<Vec<String>>()
+                .join(", "),
+        }
+    }
+}
+
+type RSSItem = rss::Item;
+impl TryFrom<RSSItem> for FeedItem {
+    type Error = &'static str;
+
+    fn try_from(rss_item: RSSItem) -> Result<Self, Self::Error> {
+        let title = match rss_item.title() {
+            Some(title) => title.to_string(),
+            None => return Err("No title"),
+        };
+        let date = rss_item.pub_date().unwrap_or_default().to_string();
+        let author = rss_item.author().unwrap_or_default().to_string();
+        Ok(FeedItem {
+            title,
+            date,
+            author,
+        })
+    }
 }
 
 pub enum Feed {
@@ -55,17 +93,11 @@ impl Feed {
                 let new_items: Vec<rss::Item> = rss_feed
                     .items()
                     .iter()
-                    .filter(|item| {
-                        if let Some(title) = item.title() {
-                            let feed_item = FeedItem {
-                                title: title.to_string(),
-                            };
-                            predicate(feed_item)
-                        } else {
-                            false
-                        }
-                    })
                     .cloned()
+                    .filter(|item| match FeedItem::try_from(item.to_owned()) {
+                        Ok(feed_item) => predicate(feed_item),
+                        _ => false,
+                    })
                     .collect();
                 rss_feed.set_items(new_items)
             }
@@ -73,13 +105,8 @@ impl Feed {
                 let new_entries: Vec<atom_syndication::Entry> = atom_feed
                     .entries()
                     .iter()
-                    .filter(|entry| {
-                        let feed_item = FeedItem {
-                            title: entry.title().to_string(),
-                        };
-                        predicate(feed_item)
-                    })
                     .cloned()
+                    .filter(|entry| predicate(FeedItem::from(entry.to_owned())))
                     .collect();
                 atom_feed.set_entries(new_entries);
             }
@@ -91,16 +118,14 @@ impl Feed {
             Feed::RSS(rss_feed) => rss_feed
                 .items()
                 .iter()
-                .map(|item| FeedItem {
-                    title: item.title().unwrap().to_string(),
-                })
+                .cloned()
+                .filter_map(|item| FeedItem::try_from(item).ok())
                 .collect(),
             Feed::Atom(atom_feed) => atom_feed
                 .entries()
                 .iter()
-                .map(|entry| FeedItem {
-                    title: entry.title().to_string(),
-                })
+                .cloned()
+                .map(FeedItem::from)
                 .collect(),
         }
     }
