@@ -21,7 +21,7 @@ export default class FeedPreview extends React.Component<Props, State> {
   };
 
   private async loadFeed(feedUrl: string) {
-    this.setState({ loading: true });
+    this.setState({ loading: true, feedItems: [] });
     let parser = new Parser();
     let feed = await parser.parseURL(feedUrl);
     let feedItems: Array<FeedItem> = feed.items.map(item => {

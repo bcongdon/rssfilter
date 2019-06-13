@@ -1,29 +1,26 @@
 import * as React from 'react';
 import { Divider, Button, Input, Form, Popup } from 'semantic-ui-react';
-import * as QueryString from 'query-string';
 
 export interface FeedFormValues {
-  feedURL: string;
+  feedUrl: string;
   titleReject: string;
   titleAccept: string;
 }
 
 interface Props {
-  onChange: (formValues: FeedFormValues) => void;
-  filterFeedURL?: string;
+  onSubmit: (formValues: FeedFormValues) => void;
 }
-
-const baseURL: string = 'https://rssfilter-a7aj2utffa-uc.a.run.app';
 
 export class FeedForm extends React.Component<Props, FeedFormValues> {
   state: Readonly<FeedFormValues> = {
-    feedURL: '',
+    feedUrl: '',
     titleAccept: '',
     titleReject: '',
   };
 
   handleFeedURLChange = (event: React.FormEvent) => {
-    this.setState({ feedURL: (event.target as HTMLSelectElement).value });
+    let feedUrl = (event.target as HTMLSelectElement).value;
+    this.setState({ feedUrl });
   };
 
   handleTitleAcceptChange = async (event: React.FormEvent) => {
@@ -36,21 +33,9 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
     this.setState({ titleReject });
   };
 
-  getFilterFeedURL(): string {
-    const { feedURL, titleReject, titleAccept } = this.state;
-    if (!feedURL) {
-      return '';
-    }
-
-    let query: any = {
-      url: feedURL,
-      title_reject: titleReject,
-      title_accept: titleAccept,
-    };
-    Object.keys(query).forEach(key => !query[key] && delete query[key]);
-    const queryString = QueryString.stringify(query);
-    return `${baseURL}/feed?${queryString}`;
-  }
+  onSubmit = () => {
+    this.props.onSubmit(this.state);
+  };
 
   render() {
     return (
@@ -76,7 +61,9 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
           </Form.Field>
         </Form.Group>
         <Divider />
-        <Button color="green">Get Feed</Button>
+        <Button color="green" onClick={this.onSubmit}>
+          Get Feed
+        </Button>
       </Form>
     );
   }
