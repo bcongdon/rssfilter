@@ -52,8 +52,8 @@ impl TryFrom<RSSItem> for FeedItem {
 }
 
 pub enum Feed {
-    RSS(rss::Channel),
-    Atom(atom_syndication::Feed),
+    RSS(Box<rss::Channel>),
+    Atom(Box<atom_syndication::Feed>),
 }
 
 impl Feed {
@@ -68,11 +68,11 @@ impl Feed {
             .read_to_end(&mut content)?;
 
         if let Ok(rss_feed) = Channel::read_from(&content[..]) {
-            return Ok(Feed::RSS(rss_feed));
+            return Ok(Feed::RSS(Box::new(rss_feed)));
         }
 
         match atom_syndication::Feed::read_from(&content[..]) {
-            Ok(atom_feed) => Ok(Feed::Atom(atom_feed)),
+            Ok(atom_feed) => Ok(Feed::Atom(Box::new(atom_feed))),
             Err(err) => Err(Box::new(FeedError(err.to_string()).compat())),
         }
     }
