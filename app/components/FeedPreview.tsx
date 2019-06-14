@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { Feed, Segment, Header, Divider, Checkbox } from 'semantic-ui-react';
+import { Feed, Segment, Header, Divider, Checkbox, Icon } from 'semantic-ui-react';
 import { FeedItem, FeedPreviewItem } from './FeedPreviewItem';
-// import Parser from 'rss-parser';
 import axios from 'axios';
-import { baseURL } from '../constants';
 
 interface Props {
   feedUrl: string;
@@ -17,14 +15,13 @@ interface State {
 
 export default class FeedPreview extends React.Component<Props, State> {
   state: Readonly<State> = {
-    loading: false,
+    loading: true,
     feedItems: [],
     showExcludedPosts: false,
   };
 
   private async loadFeed(feedUrl: string) {
-    this.setState({ loading: true, feedItems: [] });
-    console.log(feedUrl);
+    await this.setState({ loading: true, feedItems: [] });
     const response = await axios.get(feedUrl);
     let feedItems: Array<FeedItem> = response.data.items.map((item: any) => {
       const included = item.included;
@@ -51,6 +48,15 @@ export default class FeedPreview extends React.Component<Props, State> {
   render() {
     const { loading, feedItems, showExcludedPosts } = this.state;
 
+    let feedPreviewItems = feedItems
+      .filter(feedItem => showExcludedPosts || feedItem.included)
+      .map(feedItem => (
+        <>
+          <FeedPreviewItem {...feedItem} key={feedItem.url} />
+          <Divider />
+        </>
+      ));
+
     return (
       <Segment loading={loading}>
         <Header as="h3">Preview</Header>
@@ -60,14 +66,16 @@ export default class FeedPreview extends React.Component<Props, State> {
           onChange={this.toggleShowExcludedPosts}
         />
         <Feed style={{ minHeight: 100, maxHeight: 500, overflowY: 'auto' }}>
-          {feedItems
-            .filter(feedItem => showExcludedPosts || feedItem.included)
-            .map(feedItem => (
-              <>
-                <FeedPreviewItem {...feedItem} key={feedItem.url} />
-                <Divider />
-              </>
-            ))}
+          {loading || feedPreviewItems.length > 0 ? (
+            feedPreviewItems
+          ) : (
+            <Segment placeholder>
+              <Header icon>
+                <Icon name="search" />
+                No feed items matched the filter.
+              </Header>
+            </Segment>
+          )}
         </Feed>
       </Segment>
     );
