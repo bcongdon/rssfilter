@@ -11,6 +11,7 @@ extern crate rss;
 extern crate serde;
 
 mod feed;
+mod cors;
 pub mod routes;
 
 fn main() {
@@ -19,5 +20,6 @@ fn main() {
             "/",
             routes![routes::index, routes::get_feed, routes::preview_feed],
         )
+        .attach(cors::CORS())
         .launch();
 }
