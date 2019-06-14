@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Feed, Segment, Header, Divider, Checkbox } from 'semantic-ui-react';
 import { FeedItem, FeedPreviewItem } from './FeedPreviewItem';
-import Parser from 'rss-parser';
+// import Parser from 'rss-parser';
+import axios from 'axios';
+import { baseURL } from '../constants';
 
 interface Props {
   feedUrl: string;
@@ -22,15 +24,12 @@ export default class FeedPreview extends React.Component<Props, State> {
 
   private async loadFeed(feedUrl: string) {
     this.setState({ loading: true, feedItems: [] });
-    let parser = new Parser();
-    let feed = await parser.parseURL(feedUrl);
-    let feedItems: Array<FeedItem> = feed.items.map(item => {
-      return {
-        title: item.title,
-        url: item.link,
-        date: item.pubDate,
-        included: item.title.startsWith('A'),
-      };
+    console.log(feedUrl);
+    const response = await axios.get(feedUrl);
+    let feedItems: Array<FeedItem> = response.data.items.map((item: any) => {
+      const included = item.included;
+      const { author, date, title } = item.item;
+      return { included, author, date, title };
     });
     this.setState({ loading: false, feedItems });
   }

@@ -6,12 +6,11 @@ import FeedPreview from './components/FeedPreview';
 import FeedLinkOutput from './components/FeedLinkOutput';
 import * as QueryString from 'query-string';
 
+import { baseURL, corsProxy } from './constants';
+
 interface AppState {
   feedFormValues?: FeedFormValues;
 }
-
-const baseURL: string = 'https://rssfilter-a7aj2utffa-uc.a.run.app';
-const corsProxy: string = 'https://cors-anywhere.herokuapp.com/';
 
 export default class App extends React.Component<{}, AppState> {
   state: Readonly<AppState> = {
@@ -23,23 +22,27 @@ export default class App extends React.Component<{}, AppState> {
     console.log(formValues);
   };
 
-  getFilterFeedURL(): string {
+  getFilterQueryString(): string {
     if (!this.state.feedFormValues) {
       return '';
     }
     const { feedUrl, titleReject, titleAccept } = this.state.feedFormValues;
-    if (!feedUrl) {
-      return '';
-    }
-
     let query: any = {
       url: feedUrl,
       title_reject: titleReject,
-      title_accept: titleAccept,
+      title_allow: titleAccept,
     };
     Object.keys(query).forEach(key => !query[key] && delete query[key]);
     const queryString = QueryString.stringify(query);
-    return `${baseURL}/feed?${queryString}`;
+    return queryString;
+  }
+
+  getFilterFeedURL(): string {
+    return `${baseURL}/feed?${this.getFilterQueryString()}`;
+  }
+
+  getPreviewFeedURL(): string {
+    return `${baseURL}/preview_feed?${this.getFilterQueryString()}`;
   }
 
   render() {
@@ -48,7 +51,7 @@ export default class App extends React.Component<{}, AppState> {
       this.state.feedFormValues && this.state.feedFormValues.feedUrl ? (
         <Segment.Group>
           <FeedLinkOutput feedUrl={filterUrl} />
-          <FeedPreview feedUrl={corsProxy + filterUrl} />
+          <FeedPreview feedUrl={this.getPreviewFeedURL()} />
         </Segment.Group>
       ) : null;
     return (

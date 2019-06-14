@@ -52,12 +52,12 @@
     "@types/react-dom": "^16.8.4",
     "@types/valid-url": "^1.0.2",
     "@types/xml2js": "^0.4.4",
+    "axios": "^0.19.0",
     "dayjs": "^1.8.14",
     "formik": "^1.5.7",
     "query-string": "^6.7.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "rss-parser": "^3.7.1",
     "semantic-ui-react": "^0.87.1",
     "valid-url": "^1.0.9"
   }
