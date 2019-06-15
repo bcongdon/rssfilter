@@ -19,7 +19,6 @@ export default class App extends React.Component<{}, AppState> {
 
   onFormSubmit = (formValues: FeedFormValues) => {
     this.setState({ feedFormValues: formValues });
-    console.log(formValues);
   };
 
   getFilterQueryString(): string {
