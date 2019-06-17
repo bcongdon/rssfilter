@@ -10,7 +10,7 @@
 
 > Like email filters, but for RSS feeds.
 
-### 🌎 Live Version (TODO)
+### 🌎 [Live Version](https://rssfilter.xyz)
 
 ### 🏠 [Project Homepage](https://github.com/bcongdon/rssfilter#readme)
 
