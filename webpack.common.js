@@ -1,3 +1,9 @@
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+var HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+
+const isProduction = process.env.ENV === "production";
+
 module.exports = {
   entry: "./app/index.tsx",
   output: {
@@ -27,7 +33,14 @@ module.exports = {
   resolve: {
     extensions: ["*", ".js", ".jsx", ".ts", ".tsx", ".wasm"]
   },
-  devServer: {
-    contentBase: "./dist"
-  }
+  plugins: [
+    new webpack.ProgressPlugin(),
+    new CleanWebpackPlugin({ protectWebpackAssets: true }),
+    new HtmlWebpackPlugin({
+      template: "./app/index.html",
+      inject: true,
+      minify: isProduction,
+      production: isProduction
+    })
+  ]
 };

@@ -6,7 +6,7 @@ import FeedPreview from './components/FeedPreview';
 import FeedLinkOutput from './components/FeedLinkOutput';
 import * as QueryString from 'query-string';
 
-import { baseURL, corsProxy } from './constants';
+import { baseURL } from './constants';
 
 interface AppState {
   feedFormValues?: FeedFormValues;
