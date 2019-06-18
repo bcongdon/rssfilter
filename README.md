@@ -70,6 +70,10 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 
 Give a ⭐️ if this project helped you!
 
+## Asset Attribution
+
+- Favicon is RSS by Rafaël Massé from the Noun Project
+
 ## 📝 License
 
 Copyright © 2019 [Benjamin Congdon](https://github.com/bcongdon).<br />

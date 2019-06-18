@@ -40,6 +40,7 @@ module.exports = {
       template: "./app/index.html",
       inject: true,
       minify: isProduction,
+      favicon: "favicon.ico",
       production: isProduction
     })
   ]
