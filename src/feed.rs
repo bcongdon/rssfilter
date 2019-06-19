@@ -42,11 +42,26 @@ impl TryFrom<RSSItem> for FeedItem {
             None => return Err("No title"),
         };
         let date = rss_item.pub_date().unwrap_or_default().to_string();
-        let author = rss_item.author().unwrap_or_default().to_string();
+
+        let dc_contributors: Vec<String> = match rss_item.dublin_core_ext() {
+            Some(dublin_core_ext) => dublin_core_ext.contributors().iter().cloned().collect(),
+            _ => vec!{},
+        };
+
+        let dc_creators: Vec<String> = match rss_item.dublin_core_ext() {
+            Some(dublin_core_ext) => dublin_core_ext.creators().iter().cloned().collect(),
+            _ => vec!{},
+        };
+
+        let mut all_authors = dc_contributors.iter().chain(dc_creators.iter()).cloned().collect::<Vec<String>>();
+        if let Some(rss_author) = rss_item.author() {
+            all_authors.push(rss_author.to_string());
+        }
+
         Ok(FeedItem {
             title,
             date,
-            author,
+            author: all_authors.join(", "),
         })
     }
 }
