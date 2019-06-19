@@ -55,6 +55,7 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
                 );
               }}
             />
+            <Divider />
 
             {/* Title Filters */}
             <Form.Group widths="equal">
@@ -82,7 +83,6 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
                 )}
               />
             </Form.Group>
-
             {/* Author Filters */}
             <Form.Group widths="equal">
               <FormikField
