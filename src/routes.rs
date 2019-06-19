@@ -28,17 +28,27 @@ pub struct FeedQuery {
     url: String,
     title_reject: Option<FilterRegex>,
     title_allow: Option<FilterRegex>,
+    author_reject: Option<FilterRegex>,
+    author_allow: Option<FilterRegex>,
 }
 
 impl FeedQuery {
     fn filter(&self, item: FeedItem) -> bool {
         let mut accepted = true;
-        if let Some(reject_re) = &self.title_reject {
-            accepted &= !reject_re.0.is_match(&item.title);
+        if let Some(title_reject) = &self.title_reject {
+            accepted &= !title_reject.0.is_match(&item.title);
         }
 
-        if let Some(allow_re) = &self.title_allow {
-            accepted &= allow_re.0.is_match(&item.title);
+        if let Some(title_allow) = &self.title_allow {
+            accepted &= title_allow.0.is_match(&item.title);
+        }
+
+        if let Some(author_reject) = &self.author_reject {
+            accepted &= !author_reject.0.is_match(&item.title);
+        }
+
+        if let Some(author_allow) = &self.author_allow {
+            accepted &= author_allow.0.is_match(&item.title);
         }
 
         accepted

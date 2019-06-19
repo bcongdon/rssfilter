@@ -25,11 +25,19 @@ export default class App extends React.Component<{}, AppState> {
     if (!this.state.feedFormValues) {
       return '';
     }
-    const { feedUrl, titleReject, titleAccept } = this.state.feedFormValues;
+    const {
+      feedUrl,
+      titleReject,
+      titleAccept,
+      authorAccept,
+      authorReject,
+    } = this.state.feedFormValues;
     let query: any = {
       url: feedUrl,
       title_reject: titleReject,
       title_allow: titleAccept,
+      author_reject: authorReject,
+      author_allow: authorAccept,
     };
     Object.keys(query).forEach(key => !query[key] && delete query[key]);
     const queryString = QueryString.stringify(query);

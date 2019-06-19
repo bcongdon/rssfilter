@@ -7,6 +7,8 @@ export interface FeedFormValues {
   feedUrl: string;
   titleReject: string;
   titleAccept: string;
+  authorReject: string;
+  authorAccept: string;
 }
 
 interface Props {
@@ -18,6 +20,8 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
     feedUrl: '',
     titleAccept: '',
     titleReject: '',
+    authorAccept: '',
+    authorReject: '',
   };
 
   render() {
@@ -52,6 +56,7 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
               }}
             />
 
+            {/* Title Filters */}
             <Form.Group widths="equal">
               <FormikField
                 name="titleAccept"
@@ -66,7 +71,6 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
                   );
                 }}
               />
-
               <FormikField
                 name="titleReject"
                 render={({ field, form }: FieldProps<FeedFormValues>) => (
@@ -74,6 +78,35 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
                     <label>Title Reject</label>
                     <input type="text" {...field} placeholder="A regex for titles to reject" />
                     {form.touched.titleReject && form.errors.titleReject && form.errors.titleReject}
+                  </Form.Field>
+                )}
+              />
+            </Form.Group>
+
+            {/* Author Filters */}
+            <Form.Group widths="equal">
+              <FormikField
+                name="authorAccept"
+                render={({ field, form }: FieldProps<FeedFormValues>) => {
+                  const hasError = form.touched.authorAccept && Boolean(form.errors.authorAccept);
+                  return (
+                    <Form.Field error={hasError}>
+                      <label>Author Accept</label>
+                      <input type="text" {...field} placeholder="A regex for authors to accept" />
+                      {hasError ? <Message error content={form.errors.authorAccept} /> : null}
+                    </Form.Field>
+                  );
+                }}
+              />
+              <FormikField
+                name="authorReject"
+                render={({ field, form }: FieldProps<FeedFormValues>) => (
+                  <Form.Field>
+                    <label>Author Reject</label>
+                    <input type="text" {...field} placeholder="A regex for authors to reject" />
+                    {form.touched.authorReject &&
+                      form.errors.authorReject &&
+                      form.errors.authorReject}
                   </Form.Field>
                 )}
               />

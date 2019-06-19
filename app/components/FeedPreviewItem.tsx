@@ -9,6 +9,7 @@ export interface FeedItem {
   title: string;
   url: string;
   date?: string;
+  author?: string;
   included: boolean;
 }
 
@@ -30,8 +31,10 @@ const FeedPreviewItem: React.FunctionComponent<FeedItem> = props => (
         </a>
       </Feed.Summary>
       <Feed.Meta>
-        {props.date ? (
+        {props.date || props.author ? (
           <Feed.Date>
+            {props.author}
+            {props.author && props.date ? ' • ' : null}
             <span title={props.date}>{dayjs(props.date).fromNow()}</span>
           </Feed.Date>
         ) : null}
