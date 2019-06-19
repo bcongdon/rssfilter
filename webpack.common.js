@@ -1,6 +1,5 @@
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
-const webpack = require("webpack");
 
 const isProduction = process.env.ENV === "production";
 
@@ -34,7 +33,6 @@ module.exports = {
     extensions: ["*", ".js", ".jsx", ".ts", ".tsx", ".wasm"]
   },
   plugins: [
-    new webpack.ProgressPlugin(),
     new CleanWebpackPlugin({ protectWebpackAssets: true }),
     new HtmlWebpackPlugin({
       template: "./app/index.html",
