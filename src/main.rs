@@ -10,8 +10,8 @@ extern crate rss;
 #[macro_use]
 extern crate serde;
 
-mod feed;
 mod cors;
+mod feed;
 pub mod routes;
 
 fn main() {

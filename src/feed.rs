@@ -45,15 +45,19 @@ impl TryFrom<RSSItem> for FeedItem {
 
         let dc_contributors: Vec<String> = match rss_item.dublin_core_ext() {
             Some(dublin_core_ext) => dublin_core_ext.contributors().iter().cloned().collect(),
-            _ => vec!{},
+            _ => vec![],
         };
 
         let dc_creators: Vec<String> = match rss_item.dublin_core_ext() {
             Some(dublin_core_ext) => dublin_core_ext.creators().iter().cloned().collect(),
-            _ => vec!{},
+            _ => vec![],
         };
 
-        let mut all_authors = dc_contributors.iter().chain(dc_creators.iter()).cloned().collect::<Vec<String>>();
+        let mut all_authors = dc_contributors
+            .iter()
+            .chain(dc_creators.iter())
+            .cloned()
+            .collect::<Vec<String>>();
         if let Some(rss_author) = rss_item.author() {
             all_authors.push(rss_author.to_string());
         }
