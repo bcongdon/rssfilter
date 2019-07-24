@@ -36,6 +36,10 @@ cargo run
 npm run start
 ```
 
+## Screenshot
+
+![screenshot](img/screenshot.png)
+
 ## Deploying to Google Cloud Run
 
 1. Build the docker image:
