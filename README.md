@@ -44,11 +44,11 @@ npm run start
 
 1. Build the docker image:
 
-   `docker build -t gcr.io/rssfilter/rssfilter .`
+   `docker build -t gcr.io/$PROJECT_ID/rssfilter .`
 
 2. Upload to the GCP container image registry:
 
-   `gcloud docker -- push gcr.io/myproject/rssfilter`
+   `gcloud docker -- push gcr.io/$PROJECT_ID/rssfilter`
 
 3. Deploy to Cloud Run:
 
