@@ -30,6 +30,8 @@ pub struct FeedQuery {
     title_allow: Option<FilterRegex>,
     author_reject: Option<FilterRegex>,
     author_allow: Option<FilterRegex>,
+    url_reject: Option<FilterRegex>,
+    url_allow: Option<FilterRegex>,
 }
 
 impl FeedQuery {
@@ -49,6 +51,14 @@ impl FeedQuery {
 
         if let Some(author_allow) = &self.author_allow {
             accepted &= author_allow.0.is_match(&item.title);
+        }
+
+        if let Some(url_reject) = &self.url_reject {
+            accepted &= !url_reject.0.is_match(&item.url)
+        }
+
+        if let Some(url_allow) = &self.url_allow {
+            accepted &= url_allow.0.is_match(&item.url)
         }
 
         accepted

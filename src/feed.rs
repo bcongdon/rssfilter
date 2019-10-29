@@ -14,6 +14,7 @@ pub struct FeedItem {
     pub title: String,
     pub date: String,
     pub author: String,
+    pub url: String,
 }
 
 type AtomItem = atom_syndication::Entry;
@@ -28,6 +29,11 @@ impl From<AtomItem> for FeedItem {
                 .map(|person| person.name().to_string())
                 .collect::<Vec<String>>()
                 .join(", "),
+            url: atom_item
+                .links()
+                .first()
+                .map(|link| link.href().to_string())
+                .unwrap_or_default(),
         }
     }
 }
@@ -40,6 +46,10 @@ impl TryFrom<RSSItem> for FeedItem {
         let title = match rss_item.title() {
             Some(title) => title.to_string(),
             None => return Err("No title"),
+        };
+        let url = match rss_item.link() {
+            Some(link) => link.to_string(),
+            None => return Err("No url"),
         };
         let date = rss_item.pub_date().unwrap_or_default().to_string();
 
@@ -63,9 +73,10 @@ impl TryFrom<RSSItem> for FeedItem {
         }
 
         Ok(FeedItem {
-            title,
-            date,
             author: all_authors.join(", "),
+            date,
+            title,
+            url,
         })
     }
 }

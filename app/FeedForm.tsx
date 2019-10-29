@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Formik, Field as FormikField, FormikActions, FormikProps, FieldProps } from 'formik';
-import { Divider, Button, Form, Message } from 'semantic-ui-react';
+import { Divider, Button, Form, Message, Accordion } from 'semantic-ui-react';
 import validUrl from 'valid-url';
 
 export interface FeedFormValues {
@@ -9,25 +9,31 @@ export interface FeedFormValues {
   titleAccept: string;
   authorReject: string;
   authorAccept: string;
+  urlReject: string;
+  urlAccept: string;
 }
 
 interface Props {
   onSubmit: (formValues: FeedFormValues) => void;
 }
 
+const defaults: FeedFormValues = {
+  feedUrl: '',
+  titleAccept: '',
+  titleReject: '',
+  authorAccept: '',
+  authorReject: '',
+  urlReject: '',
+  urlAccept: '',
+};
+
 export class FeedForm extends React.Component<Props, FeedFormValues> {
-  state: Readonly<FeedFormValues> = {
-    feedUrl: '',
-    titleAccept: '',
-    titleReject: '',
-    authorAccept: '',
-    authorReject: '',
-  };
+  state: Readonly<FeedFormValues> = defaults;
 
   render() {
     return (
       <Formik
-        initialValues={{ feedUrl: '', titleAccept: '', titleReject: '' }}
+        initialValues={defaults}
         onSubmit={(values: FeedFormValues, actions: FormikActions<FeedFormValues>) => {
           this.props.onSubmit(values);
           actions.setSubmitting(false);
@@ -107,6 +113,40 @@ export class FeedForm extends React.Component<Props, FeedFormValues> {
                     {form.touched.authorReject &&
                       form.errors.authorReject &&
                       form.errors.authorReject}
+                  </Form.Field>
+                )}
+              />
+            </Form.Group>
+            {/* URL Filters */}
+            <Form.Group widths="equal">
+              <FormikField
+                name="urlAccept"
+                render={({ field, form }: FieldProps<FeedFormValues>) => {
+                  const hasError = form.touched.urlAccept && Boolean(form.errors.urlAccept);
+                  return (
+                    <Form.Field error={hasError}>
+                      <label>URL Accept</label>
+                      <input
+                        type="text"
+                        {...field}
+                        placeholder="A regex for feed item urls to accept"
+                      />
+                      {hasError ? <Message error content={form.errors.urlAccept} /> : null}
+                    </Form.Field>
+                  );
+                }}
+              />
+              <FormikField
+                name="urlReject"
+                render={({ field, form }: FieldProps<FeedFormValues>) => (
+                  <Form.Field>
+                    <label>URL Reject</label>
+                    <input
+                      type="text"
+                      {...field}
+                      placeholder="A regex for feed item urls to accept"
+                    />
+                    {form.touched.urlReject && form.errors.urlReject && form.errors.urlReject}
                   </Form.Field>
                 )}
               />
