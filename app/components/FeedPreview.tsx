@@ -35,8 +35,7 @@ export default class FeedPreview extends React.Component<Props, State> {
 
     let feedItems: Array<FeedItem> = response.data.items.map((item: any) => {
       const included = item.included;
-      const { author, date, title } = item.item;
-      return { included, author, date, title };
+      return { included, ...item.item };
     });
     this.setState({ loading: false, feedItems });
   }
