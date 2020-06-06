@@ -10,7 +10,7 @@
 
 > Like email filters, but for RSS feeds.
 
-### 🌎 [Live Version](https://rssfilter.xyz)
+### 🌎 [Live Version](https://rssfilter.netlify.app/)
 
 ### 🏠 [Project Homepage](https://github.com/bcongdon/rssfilter#readme)
 
