@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --config webpack.dev.js --mode development",
+    "start:prod": "webpack-dev-server --config webpack.prod.js",
     "build": "ENV=production webpack --config webpack.prod.js",
     "lint": "pretty-quick"
   },

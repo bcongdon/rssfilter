@@ -10,7 +10,7 @@
 
 > Like email filters, but for RSS feeds.
 
-### 🌎 [Live Version](https://rssfilter.xyz)
+### 🌎 [Live Version](https://rssfilter.netlify.app/)
 
 ### 🏠 [Project Homepage](https://github.com/bcongdon/rssfilter#readme)
 
@@ -44,22 +44,22 @@ npm run start
 
 1. Build the docker image:
 
-   `docker build -t gcr.io/$PROJECT_ID/rssfilter .`
+    `docker build -t gcr.io/$PROJECT_ID/rssfilter .`
 
 2. Upload to the GCP container image registry:
 
-   `gcloud docker -- push gcr.io/$PROJECT_ID/rssfilter`
+    `gcloud docker -- push gcr.io/$PROJECT_ID/rssfilter`
 
 3. Deploy to Cloud Run:
 
-   `TODO`
+    `TODO`
 
 ## Author
 
 👤 **Benjamin Congdon**
 
-- Twitter: [@BenRCongdon](https://twitter.com/benrcongdon)
-- Github: [@bcongdon](https://github.com/bcongdon)
+-   Twitter: [@BenRCongdon](https://twitter.com/benrcongdon)
+-   Github: [@bcongdon](https://github.com/bcongdon)
 
 ## 🤝 Contributing
 
@@ -67,8 +67,8 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 
 **Guidelines:**
 
-- Make sure that any frontend changes are linted with `npm run lint`
-- Make sure that any backend changes pass clippy checks (`cargo clippy`), and are properly formatted with `rustfmt`.
+-   Make sure that any frontend changes are linted with `npm run lint`
+-   Make sure that any backend changes pass clippy checks (`cargo clippy`), and are properly formatted with `rustfmt`.
 
 ## Show your support
 
@@ -76,7 +76,7 @@ Give a ⭐️ if this project helped you!
 
 ## Asset Attribution
 
-- Favicon is RSS by Rafaël Massé from the Noun Project
+-   Favicon is RSS by Rafaël Massé from the Noun Project
 
 ## 📝 License
 
